@@ -1,54 +1,217 @@
+import math
+
 def reward_function(params):
-    '''
-    Reward function for AWS DeepRacer on a bowtie track.
-    '''
+    # Hardcoded waypoints
+    WAYPOINTS = [
+        (2.48237307, 1.28326267),
+(2.56255277, 1.33850053),
+(2.63870435, 1.39847178),
+(2.71213799, 1.46124966),
+(2.78465597, 1.52493574),
+(2.85795894, 1.58809887),
+(2.93433879, 1.64790502),
+(3.0138927, 1.7033328),
+(3.09634393, 1.75431508),
+(3.18164137, 1.80051619),
+(3.27030122, 1.83985757),
+(3.36078174, 1.8742534),
+(3.45270748, 1.9041936),
+(3.54593793, 1.92977721),
+(3.64056601, 1.94969886),
+(3.73590809, 1.96487534),
+(3.83159495, 1.97538859),
+(3.92677227, 1.98125336),
+(4.02205941, 1.97895468),
+(4.11644447, 1.97119307),
+(4.21054741, 1.95829779),
+(4.30539621, 1.93895861),
+(4.40254996, 1.91366721),
+(4.49787302, 1.88440155),
+(4.59044305, 1.851438),
+(4.68089599, 1.81364429),
+(4.76855094, 1.77109642),
+(4.85387514, 1.72476266),
+(4.93674762, 1.67450681),
+(5.01699062, 1.62012695),
+(5.09374552, 1.56068208),
+(5.16758205, 1.49751427),
+(5.2398211, 1.4322081),
+(5.31219461, 1.36741375),
+(5.3855879, 1.30800025),
+(5.46330283, 1.25568911),
+(5.54656594, 1.21710105),
+(5.63073931, 1.19179892),
+(5.71307961, 1.17641734),
+(5.79496405, 1.17080295),
+(5.8772753, 1.17637101),
+(5.8772753, 1.17637101),
+(5.96020793, 1.19593541),
+(6.04402907, 1.2256375),
+(6.12698451, 1.26501531),
+(6.20687929, 1.31430336),
+(6.28045353, 1.37460043),
+(6.34622089, 1.44476347),
+(6.40245097, 1.52273926),
+(6.44838083, 1.60760723),
+(6.48033113, 1.6988294),
+(6.4998084, 1.79350538),
+(6.51022157, 1.88959122),
+(6.51537389, 1.98619904),
+(6.51780528, 2.08309012),
+(6.51893857, 2.18011028),
+(6.5195036, 2.27715019),
+(6.5198356, 2.37416407),
+(6.52007537, 2.47114245),
+(6.52031805, 2.56809607),
+(6.52041218, 2.66503646),
+(6.52041995, 2.76195294),
+(6.52035491, 2.8588669),
+(6.52025551, 2.95578536),
+(6.52024878, 3.05270713),
+(6.51961784, 3.14963203),
+(6.51704672, 3.24685389),
+(6.51021245, 3.34381685),
+(6.49599016, 3.44013113),
+(6.46654913, 3.53309241),
+(6.42251826, 3.6192696),
+(6.36839183, 3.69877484),
+(6.30646266, 3.77211717),
+(6.23684109, 3.83980816),
+(6.15891781, 3.89902348),
+(6.07436458, 3.94834023),
+(5.98413204, 3.98582612),
+(5.88929545, 4.00821792),
+(5.79229395, 4.01490401),
+(5.6955055, 4.00796443),
+(5.60078224, 3.98749747),
+(5.51103967, 3.9513752),
+(5.42781533, 3.90220871),
+(5.35076382, 3.84379196),
+(5.27813166, 3.78124316),
+(5.20666426, 3.71734523),
+(5.13446672, 3.65402158),
+(5.06013769, 3.5929056),
+(4.982261, 3.53594933),
+(4.9013271, 3.4829886),
+(4.81755832, 3.43427601),
+(4.73114225, 3.39021755),
+(4.64182658, 3.35254437),
+(4.55108079, 3.31881495),
+(4.45907123, 3.28886918),
+(4.36587888, 3.26265169),
+(4.27112716, 3.24247115),
+(4.17545225, 3.22693555),
+(4.07908778, 3.2162668),
+(3.98221798, 3.21153891),
+(3.88537856, 3.21450415),
+(3.78890976, 3.22240112),
+(3.69289803, 3.23509184),
+(3.59771541, 3.25348363),
+(3.5037482, 3.27731801),
+(3.41100577, 3.30541799),
+(3.31969363, 3.33781406),
+(3.23051321, 3.37566497),
+(3.14387328, 3.41891393),
+(3.05942091, 3.46629405),
+(2.97724586, 3.51764339),
+(2.89740978, 3.57268321),
+(2.82018971, 3.63141974),
+(2.74456539, 3.69225675),
+(2.66997657, 3.75438567),
+(2.59549974, 3.81660623),
+(2.51749256, 3.87896167),
+(2.43720202, 3.93449563),
+(2.35219721, 3.97830942),
+(2.2596956, 4.00583068),
+(2.16195127, 4.01702115),
+(2.0646996, 4.01288146),
+(1.97189671, 3.99539416),
+(1.87921867, 3.96701284),
+(1.79185318, 3.92735529),
+(1.71024254, 3.87643992),
+(1.63660767, 3.8132529),
+(1.57123388, 3.74114542),
+(1.51475099, 3.66165703),
+(1.46744409, 3.57631679),
+(1.43368991, 3.48504583),
+(1.41222262, 3.39090957),
+(1.39987872, 3.29570034),
+(1.39276358, 3.1998295),
+(1.38844652, 3.10346994),
+(1.38607431, 3.00672219),
+(1.38546714, 2.90981702),
+(1.38594849, 2.81290313),
+(1.38653205, 2.7160004),
+(1.38677185, 2.61908026),
+(1.38680677, 2.52215314),
+(1.38676422, 2.42522652),
+(1.38666315, 2.32829331),
+(1.38652781, 2.231257),
+(1.38657217, 2.13422055),
+(1.38745513, 2.03710757),
+(1.39074579, 1.9399259),
+(1.39884149, 1.842812),
+(1.41445588, 1.7467216),
+(1.44305037, 1.65388779),
+(1.48547454, 1.56683488),
+(1.54093626, 1.48765473),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.60615705, 1.41603551),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.7535393, 1.29290372),
+(1.83603903, 1.24279002),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.60615705, 1.41603551),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.7535393, 1.29290372),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.7535393, 1.29290372),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.60615705, 1.41603551),
+(1.60615705, 1.41603551),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.60615705, 1.41603551),
+(1.67731211, 1.35152651),
+(1.7535393, 1.29290372),
+(1.83603903, 1.24279002),
+(1.92568435, 1.20542813),
+(2.02021189, 1.18319094),
+(2.11665152, 1.17474388),
+(2.21335872, 1.17958175),
+(2.30850846, 1.19934466),
+(2.39769575, 1.23555205),
+(2.48237307, 1.28326267)
+    ]
 
     # Read input parameters
+    all_wheels_on_track = params['all_wheels_on_track']
+    x = params['x']
+    y = params['y']
     track_width = params['track_width']
     distance_from_center = params['distance_from_center']
-    speed = params['speed']
-    steering_angle = abs(params['steering_angle'])
-    all_wheels_on_track = params['all_wheels_on_track']
-
-    waypoints = params['waypoints']
-    closest_waypoints = params['closest_waypoints']
     heading = params['heading']
+    speed = params['speed']
 
-    # Extract the closest waypoints
-    next_waypoint = waypoints[closest_waypoints[1]]
-    prev_waypoint = waypoints[closest_waypoints[0]]
-
-    # Calculate the direction from the previous waypoint to the next waypoint
-    import math
-
-    track_direction = math.atan2(
-        next_waypoint[1] - prev_waypoint[1],
-        next_waypoint[0] - prev_waypoint[0]
-    )
-    track_direction = math.degrees(track_direction)
-    
-    # Calculate the difference between the track direction and the heading direction of the car
-    direction_diff = abs(track_direction - heading)
-    
-    # Ensure the difference is within [0, 180] range
-    if direction_diff > 180:
-        direction_diff = 360 - direction_diff
-
-
-
-    # Initialize reward
+    # Calculate the reward
     reward = 1.0
 
-    # Reward for staying within the track boundaries
+    # Penalize if the car is off the track
     if not all_wheels_on_track:
-        return 1e-3  # Low reward if the car is off the track
+        reward = 1e-3
+        return reward
 
-    # Calculate distance markers from the center line
+    # Calculate distance from center
     marker_1 = 0.1 * track_width
     marker_2 = 0.25 * track_width
     marker_3 = 0.5 * track_width
 
-    # Reward based on distance from the center line
     if distance_from_center <= marker_1:
         reward = 1.0
     elif distance_from_center <= marker_2:
@@ -56,21 +219,44 @@ def reward_function(params):
     elif distance_from_center <= marker_3:
         reward = 0.1
     else:
-        reward = 1e-3  # Likely crashed/close to off track
+        reward = 1e-3
 
-    # Additional reward for maintaining a good speed
-    SPEED_THRESHOLD = 3.0
-    if speed > SPEED_THRESHOLD:
+    # Find the closest waypoint
+    closest_waypoint = None
+    closest_distance = float('inf')
+    for waypoint in WAYPOINTS:
+        distance = math.sqrt((x - waypoint[0]) ** 2 + (y - waypoint[1]) ** 2)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest_waypoint = waypoint
+
+    # Reward for being close to the closest waypoint
+    if closest_distance < marker_1:
+        reward += 1.0
+    elif closest_distance < marker_2:
         reward += 0.5
+    elif closest_distance < marker_3:
+        reward += 0.1
+    else:
+        reward += 1e-3
 
-    # Penalty for excessive steering
-    STEERING_THRESHOLD = 20.0
-    if steering_angle > STEERING_THRESHOLD:
-        reward *= 0.8
-
-    DIRECTION_THRESHOLD = 15.0
-    if direction_diff > DIRECTION_THRESHOLD:
-        reward *= 0.5
+    # Reward for heading direction (if facing the right direction)
+    if closest_waypoint:
+        next_waypoint = closest_waypoint
+        track_direction = math.atan2(next_waypoint[1] - y, next_waypoint[0] - x)
+        track_direction = math.degrees(track_direction)
     
+        direction_diff = abs(track_direction - heading)
+        if direction_diff > 180:
+            direction_diff = 360 - direction_diff
+
+        DIRECTION_THRESHOLD = 10.0
+        if direction_diff < DIRECTION_THRESHOLD:
+            reward *= 1.0
+        else:
+            reward *= 0.5
+
+    # Reward for higher speeds
+    reward += speed * 0.1
 
     return float(reward)
