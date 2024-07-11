@@ -1,244 +1,327 @@
 import math
 
+
 def reward_function(params):
-    # Hardcoded waypoints
-    WAYPOINTS = [
-(2.08462719, 0.87066019),
-(2.19404376, 0.87164267),
-(2.30208978, 0.88529019),
-(2.40724276, 0.91211018),
-(2.50823001, 0.95151102),
-(2.60458043, 1.00178945),
-(2.69637773, 1.06049138),
-(2.78389835, 1.12540528),
-(2.86784914, 1.19488505),
-(2.94946828, 1.26709028),
-(3.03149254, 1.33878842),
-(3.1164391, 1.40675026),
-(3.20614292, 1.46805267),
-(3.30076564, 1.52132495),
-(3.39972384, 1.56609111),
-(3.50178757, 1.60288872),
-(3.60593625, 1.63216523),
-(3.71060331, 1.65487625),
-(3.81656719, 1.67013849),
-(3.92277466, 1.67775503),
-(4.02950303, 1.67611637),
-(4.13752027, 1.66375017),
-(4.24806352, 1.64134035),
-(4.35623444, 1.61210701),
-(4.46081642, 1.57672724),
-(4.56251816, 1.53453824),
-(4.66067379, 1.48609382),
-(4.75501067, 1.43127585),
-(4.84507785, 1.37004523),
-(4.93063522, 1.30269435),
-(5.01250076, 1.23066871),
-(5.09323072, 1.1571935),
-(5.17669636, 1.08649297),
-(5.26487509, 1.02223236),
-(5.35670107, 0.96907247),
-(5.45359709, 0.92778895),
-(5.55245385, 0.89809292),
-(5.64933592, 0.87869434),
-(5.74294377, 0.86839015),
-(5.83525867, 0.86795941),
-(5.92750382, 0.87777114),
-(5.92750382, 0.87777114),
-(6.02115004, 0.89787018),
-(6.11659305, 0.92757292),
-(6.21194207, 0.96715641),
-(6.30530498, 1.01632119),
-(6.39492373, 1.07470115),
-(6.47925909, 1.14243394),
-(6.55556102, 1.21902979),
-(6.62342335, 1.30367438),
-(6.68203992, 1.395206),
-(6.73083714, 1.49232062),
-(6.76829086, 1.59426517),
-(6.79385848, 1.69989273),
-(6.80924979, 1.80766231),
-(6.81754812, 1.9163238),
-(6.82159671, 2.02524244),
-(6.82341249, 2.13419064),
-(6.824214, 2.24311083),
-(6.82461165, 2.35200544),
-(6.82486589, 2.46088532),
-(6.82513875, 2.56973827),
-(6.82525153, 2.6785887),
-(6.82526974, 2.78744426),
-(6.82521006, 2.89630351),
-(6.82509185, 3.0051705),
-(6.82502829, 3.11441335),
-(6.82306833, 3.22360533),
-(6.81742332, 3.3328787),
-(6.80494579, 3.44190576),
-(6.78284656, 3.54849925),
-(6.74815624, 3.65093757),
-(6.70117538, 3.74807098),
-(6.64331923, 3.8405944),
-(6.57640161, 3.92791175),
-(6.50203793, 4.009094),
-(6.42097757, 4.083304),
-(6.3335612, 4.14947729),
-(6.24014888, 4.20639746),
-(6.14134134, 4.25275761),
-(6.03810055, 4.28770141),
-(5.93155648, 4.30995199),
-(5.82320398, 4.31946924),
-(5.71454414, 4.31640101),
-(5.60787682, 4.30167536),
-(5.50347757, 4.27531767),
-(5.40268663, 4.23687738),
-(5.30711534, 4.18640372),
-(5.21753708, 4.1253931),
-(5.13312925, 4.05688934),
-(5.05168655, 3.98458174),
-(4.97047271, 3.91196195),
-(4.88703866, 3.84200653),
-(4.79970445, 3.77714634),
-(4.70772112, 3.71918747),
-(4.61127216, 3.66898182),
-(4.51117091, 3.62632125),
-(4.40842776, 3.59010582),
-(4.30371884, 3.55992821),
-(4.19735247, 3.53643313),
-(4.08960459, 3.52096198),
-(3.98098525, 3.51473639),
-(3.87222232, 3.51821486),
-(3.76403609, 3.53051605),
-(3.65700445, 3.5506964),
-(3.55160585, 3.57811702),
-(3.44840556, 3.61276626),
-(3.34808058, 3.65489876),
-(3.25124318, 3.70449864),
-(3.15818393, 3.76091826),
-(3.06874036, 3.82298715),
-(2.98235368, 3.88931779),
-(2.89807646, 3.95839574),
-(2.81454086, 4.02844766),
-(2.72992975, 4.09721808),
-(2.64234915, 4.16210869),
-(2.54677126, 4.22083476),
-(2.44736842, 4.26725208),
-(2.34467207, 4.29930942),
-(2.23764323, 4.31778155),
-(2.12691976, 4.32177821),
-(2.01776732, 4.31354983),
-(1.91330238, 4.294769),
-(1.8082866, 4.26548416),
-(1.70790348, 4.22593503),
-(1.61192809, 4.1760623),
-(1.52099212, 4.11578671),
-(1.43720795, 4.04532706),
-(1.3608611, 3.96664058),
-(1.29323694, 3.88030206),
-(1.23438767, 3.78807978),
-(1.18494873, 3.69143917),
-(1.14650064, 3.59063796),
-(1.11929237, 3.48612961),
-(1.10195179, 3.3791842),
-(1.0916234, 3.27097385),
-(1.08546937, 3.16230248),
-(1.08182547, 3.05351174),
-(1.08056453, 2.94467914),
-(1.08100748, 2.83582232),
-(1.08168588, 2.72695919),
-(1.08194577, 2.61809481),
-(1.08195093, 2.50922268),
-(1.08177264, 2.40023486),
-(1.08156767, 2.29124694),
-(1.08149439, 2.18216716),
-(1.08214171, 2.0729467),
-(1.08476032, 1.96350086),
-(1.09162035, 1.85434096),
-(1.10514966, 1.74595591),
-(1.1275455, 1.63928882),
-(1.16112872, 1.53581762),
-(1.20711506, 1.43712093),
-(1.26447372, 1.3457208),
-(1.33212076, 1.26144566),
-(1.4077425, 1.18349417),
-(1.48952011, 1.11100591),
-(1.57644586, 1.04485959),
-(1.66834437, 0.98647073),
-(1.76649477, 0.9392008),
-(1.87006606, 0.90424075),
-(1.97592801, 0.88174091),
-(2.08462719, 0.87066019)    ]
 
-    # Read input parameters
-    all_wheels_on_track = params['all_wheels_on_track']
-    x = params['x']
-    y = params['y']
-    track_width = params['track_width']
-    distance_from_center = params['distance_from_center']
-    heading = params['heading']
-    speed = params['speed']
+    ################## CONSTANTS ##################
 
-    # Calculate the reward
-    reward = 1.0
+    DISTANCE_MULTIPLE = 1
+    SPEED_DIFF_NO_REWARD = 1
+    SPEED_MULTIPLE = 2
+    REWARD_PER_STEP_FOR_FASTEST_TIME = 1
+    STANDARD_TIME = 37  # seconds (easily achievable time)
+    FASTEST_TIME = 27  # seconds (record time)
+    REWARD_FOR_FASTEST_TIME = (
+        1500  # should be adapted to track length and other rewards
+    )
+    ZERO_REWARD_THRESHOLD_DIRECTION = 30
+    ZERO_REWARD_THRESHOLD_SPEED_DIFF = 0.5
 
-    # Penalize if the car is off the track
-    if not all_wheels_on_track:
-        reward = 1e-3
-        return reward
+    ################## HELPER FUNCTIONS ###################
 
-    # Calculate distance from center
-    marker_1 = 0.1 * track_width
-    marker_2 = 0.25 * track_width
-    marker_3 = 0.5 * track_width
+    def dist_2_points(x1, x2, y1, y2):
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-    if distance_from_center <= marker_1:
-        reward = 1.0
-    elif distance_from_center <= marker_2:
-        reward = 0.5
-    elif distance_from_center <= marker_3:
-        reward = 0.1
-    else:
-        reward = 1e-3
+    def closest_2_racing_points_index(racing_coords, car_coords):
+        distances = [
+            dist_2_points(r[0], car_coords[0], r[1], car_coords[1])
+            for r in racing_coords
+        ]
+        closest_index = distances.index(min(distances))
+        distances[closest_index] = float("inf")
+        second_closest_index = distances.index(min(distances))
+        return [closest_index, second_closest_index]
 
-    # Find the closest waypoint
-    closest_waypoint = None
-    closest_distance = float('inf')
-    for waypoint in WAYPOINTS:
-        distance = math.sqrt((x - waypoint[0]) ** 2 + (y - waypoint[1]) ** 2)
-        if distance < closest_distance:
-            closest_distance = distance
-            closest_waypoint = waypoint
+    def dist_to_racing_line(closest_coords, second_closest_coords, car_coords):
+        a = dist_2_points(*closest_coords, *second_closest_coords)
+        b = dist_2_points(*car_coords, *closest_coords)
+        c = dist_2_points(*car_coords, *second_closest_coords)
+        try:
+            distance = abs(
+                -(a**4)
+                + 2 * (a**2) * (b**2)
+                + 2 * (a**2) * (c**2)
+                - (b**4)
+                + 2 * (b**2) * (c**2)
+                - (c**4)
+            ) ** 0.5 / (2 * a)
+        except ZeroDivisionError:
+            distance = b
+        return distance
 
-    # Reward for being close to the closest waypoint
-    if closest_distance < marker_1:
-        reward += 1.0
-    elif closest_distance < marker_2:
-        reward += 0.5
-    elif closest_distance < marker_3:
-        reward += 0.1
-    else:
-        reward += 1e-3
+    def next_prev_racing_point(
+        closest_coords, second_closest_coords, car_coords, heading
+    ):
+        heading_vector = [
+            math.cos(math.radians(heading)),
+            math.sin(math.radians(heading)),
+        ]
+        new_car_coords = [
+            car_coords[0] + heading_vector[0],
+            car_coords[1] + heading_vector[1],
+        ]
+        distance_closest_new = dist_2_points(
+            new_car_coords[0], closest_coords[0], new_car_coords[1], closest_coords[1]
+        )
+        distance_second_closest_new = dist_2_points(
+            new_car_coords[0],
+            second_closest_coords[0],
+            new_car_coords[1],
+            second_closest_coords[1],
+        )
+        if distance_closest_new <= distance_second_closest_new:
+            return [closest_coords, second_closest_coords]
+        else:
+            return [second_closest_coords, closest_coords]
 
-    # Reward for heading direction (if facing the right direction)
-    if closest_waypoint:
-        next_waypoint = closest_waypoint
-        track_direction = math.atan2(next_waypoint[1] - y, next_waypoint[0] - x)
-        track_direction = math.degrees(track_direction)
-    
+    def racing_direction_diff(
+        closest_coords, second_closest_coords, car_coords, heading
+    ):
+        next_point, prev_point = next_prev_racing_point(
+            closest_coords, second_closest_coords, car_coords, heading
+        )
+        track_direction = math.degrees(
+            math.atan2(next_point[1] - prev_point[1], next_point[0] - prev_point[0])
+        )
         direction_diff = abs(track_direction - heading)
         if direction_diff > 180:
             direction_diff = 360 - direction_diff
+        return direction_diff
 
-        DIRECTION_THRESHOLD = 10.0
-        if direction_diff < DIRECTION_THRESHOLD:
-            reward *= 1.0
-        else:
-            reward *= 0.5
+    def indexes_cyclical(start, end, array_len):
+        if end < start:
+            end += array_len
+        return [i % array_len for i in range(start, end)]
 
-    # Reward for higher speeds, with additional reward if close to a waypoint
-    if closest_distance < marker_1:
-        speed_reward = speed * 0.2  # Higher reward when close to waypoints
+    def projected_time(first_index, closest_index, step_count, times_list):
+        current_actual_time = (step_count - 1) / 15
+        indexes_traveled = indexes_cyclical(first_index, closest_index, len(times_list))
+        current_expected_time = sum([times_list[i] for i in indexes_traveled])
+        total_expected_time = sum(times_list)
+        try:
+            projected_time = (
+                current_actual_time / current_expected_time
+            ) * total_expected_time
+        except ZeroDivisionError:
+            projected_time = 9999
+        return projected_time
+
+    #################### RACING LINE ######################
+
+    racing_track = [
+        [8.43935, 3.01029, 3.38147, 0.05182],
+        [8.26558, 3.05278, 3.66668, 0.04879],
+        [8.08672, 3.08829, 3.99289, 0.04567],
+        [7.90355, 3.11752, 4.0, 0.04637],
+        [7.7168, 3.14119, 4.0, 0.04706],
+        [7.5272, 3.16003, 4.0, 0.04763],
+        [7.33541, 3.17474, 4.0, 0.04809],
+        [7.14197, 3.18595, 4.0, 0.04844],
+        [6.94735, 3.19423, 4.0, 0.0487],
+        [6.75188, 3.20006, 4.0, 0.04889],
+        [6.55582, 3.20385, 4.0, 0.04902],
+        [6.35935, 3.20596, 4.0, 0.04912],
+        [6.16259, 3.2067, 4.0, 0.04919],
+        [5.96563, 3.20637, 4.0, 0.04924],
+        [5.76852, 3.20523, 4.0, 0.04928],
+        [5.5713, 3.20345, 4.0, 0.04931],
+        [5.374, 3.20121, 4.0, 0.04933],
+        [5.17505, 3.19858, 4.0, 0.04974],
+        [4.97482, 3.19625, 4.0, 0.05006],
+        [4.7741, 3.1942, 4.0, 0.05018],
+        [4.57315, 3.19241, 4.0, 0.05024],
+        [4.37212, 3.19089, 4.0, 0.05026],
+        [4.17104, 3.18963, 4.0, 0.05027],
+        [3.96995, 3.1886, 4.0, 0.05027],
+        [3.76885, 3.18785, 4.0, 0.05027],
+        [3.56776, 3.18737, 4.0, 0.05027],
+        [3.36667, 3.18723, 4.0, 0.05027],
+        [3.16558, 3.18748, 4.0, 0.05027],
+        [2.9645, 3.18823, 4.0, 0.05027],
+        [2.767, 3.18834, 3.95374, 0.04995],
+        [2.57181, 3.18691, 3.50462, 0.0557],
+        [2.37972, 3.18299, 3.12204, 0.06154],
+        [2.19127, 3.1757, 2.77351, 0.068],
+        [2.00696, 3.1642, 2.46194, 0.07501],
+        [1.82722, 3.14773, 2.14836, 0.08401],
+        [1.65284, 3.12518, 1.90076, 0.09251],
+        [1.48458, 3.09547, 1.60102, 0.10672],
+        [1.32329, 3.05752, 1.60102, 0.1035],
+        [1.17005, 3.01005, 1.60102, 0.1002],
+        [1.02623, 2.95169, 1.60102, 0.09694],
+        [0.89404, 2.88058, 1.60102, 0.09375],
+        [0.77624, 2.79519, 1.60102, 0.09088],
+        [0.67913, 2.69318, 1.72418, 0.08169],
+        [0.6005, 2.5801, 1.81546, 0.07587],
+        [0.53883, 2.45932, 1.86991, 0.07252],
+        [0.49331, 2.33309, 1.72372, 0.07785],
+        [0.46313, 2.20314, 1.58412, 0.08421],
+        [0.44777, 2.07085, 1.58412, 0.08408],
+        [0.44713, 1.93731, 1.58412, 0.0843],
+        [0.46234, 1.80363, 1.58412, 0.08493],
+        [0.49473, 1.67118, 1.58412, 0.08607],
+        [0.54795, 1.5423, 1.58412, 0.08802],
+        [0.62663, 1.42132, 1.8093, 0.07976],
+        [0.7254, 1.30942, 2.00671, 0.07438],
+        [0.84116, 1.207, 2.21542, 0.06976],
+        [0.97144, 1.11408, 2.47611, 0.06463],
+        [1.11377, 1.03013, 2.70413, 0.06111],
+        [1.26646, 0.95486, 2.94946, 0.05772],
+        [1.42796, 0.88788, 3.21408, 0.0544],
+        [1.59678, 0.82869, 3.49565, 0.05118],
+        [1.77157, 0.77673, 3.78893, 0.04813],
+        [1.95114, 0.73143, 4.0, 0.0463],
+        [2.1344, 0.69223, 4.0, 0.04685],
+        [2.32052, 0.65878, 4.0, 0.04728],
+        [2.50861, 0.63037, 4.0, 0.04755],
+        [2.69803, 0.60658, 4.0, 0.04773],
+        [2.88828, 0.58702, 4.0, 0.04781],
+        [3.07897, 0.57137, 4.0, 0.04783],
+        [3.26976, 0.55938, 4.0, 0.04779],
+        [3.46043, 0.55084, 4.0, 0.04771],
+        [3.65077, 0.54552, 4.0, 0.04761],
+        [3.84067, 0.54323, 4.0, 0.04748],
+        [4.03002, 0.54376, 4.0, 0.04734],
+        [4.21876, 0.54698, 4.0, 0.04719],
+        [4.40686, 0.55268, 4.0, 0.04705],
+        [4.59434, 0.5606, 4.0, 0.04691],
+        [4.78125, 0.57046, 4.0, 0.04679],
+        [4.96764, 0.58196, 4.0, 0.04669],
+        [5.15358, 0.59487, 4.0, 0.0466],
+        [5.33912, 0.60895, 4.0, 0.04652],
+        [5.52029, 0.62381, 4.0, 0.04544],
+        [5.70023, 0.63691, 4.0, 0.0451],
+        [5.87917, 0.64789, 4.0, 0.04482],
+        [6.05734, 0.65625, 4.0, 0.04459],
+        [6.23489, 0.66152, 4.0, 0.04441],
+        [6.41189, 0.66326, 4.0, 0.04425],
+        [6.58836, 0.66112, 4.0, 0.04412],
+        [6.76427, 0.65482, 4.0, 0.04401],
+        [6.9396, 0.64421, 4.0, 0.04391],
+        [7.11426, 0.62934, 4.0, 0.04382],
+        [7.28813, 0.61046, 4.0, 0.04372],
+        [7.46095, 0.58796, 4.0, 0.04357],
+        [7.63235, 0.56236, 4.0, 0.04333],
+        [7.80193, 0.53428, 3.33195, 0.05159],
+        [7.96951, 0.50442, 2.85192, 0.05968],
+        [8.13557, 0.47356, 2.47562, 0.06823],
+        [8.28586, 0.44612, 2.17672, 0.07019],
+        [8.43501, 0.42144, 1.95745, 0.07723],
+        [8.58213, 0.40161, 1.70296, 0.08717],
+        [8.72643, 0.38847, 1.46848, 0.09867],
+        [8.86712, 0.38376, 1.3, 0.10829],
+        [9.00334, 0.38927, 1.3, 0.10487],
+        [9.1341, 0.40675, 1.3, 0.10148],
+        [9.25837, 0.43766, 1.3, 0.09851],
+        [9.37417, 0.48478, 1.3, 0.09617],
+        [9.47805, 0.55213, 1.3, 0.09523],
+        [9.56436, 0.64413, 1.60016, 0.07883],
+        [9.63662, 0.75205, 1.74666, 0.07436],
+        [9.69488, 0.87319, 1.88058, 0.07148],
+        [9.73892, 1.00522, 2.02877, 0.06861],
+        [9.76881, 1.14568, 2.1333, 0.06731],
+        [9.78428, 1.29229, 2.22742, 0.06619],
+        [9.78535, 1.4427, 2.29394, 0.06557],
+        [9.7721, 1.59463, 2.28822, 0.06665],
+        [9.745, 1.74604, 2.13553, 0.07203],
+        [9.70477, 1.89525, 1.9143, 0.08072],
+        [9.65229, 2.04097, 1.9143, 0.08091],
+        [9.58774, 2.18197, 1.9143, 0.08101],
+        [9.51133, 2.3171, 1.9143, 0.08109],
+        [9.422, 2.44446, 1.9143, 0.08126],
+        [9.31851, 2.56165, 1.9143, 0.08167],
+        [9.19824, 2.66442, 2.15017, 0.07357],
+        [9.06505, 2.75444, 2.36942, 0.06785],
+        [8.92115, 2.83302, 2.59959, 0.06307],
+        [8.76816, 2.90129, 2.82723, 0.05926],
+        [8.60723, 2.96012, 3.07084, 0.0558],
+    ]
+
+    ################## INPUT PARAMETERS ###################
+
+    all_wheels_on_track = params["all_wheels_on_track"]
+    x = params["x"]
+    y = params["y"]
+    distance_from_center = params["distance_from_center"]
+    is_left_of_center = params["is_left_of_center"]
+    heading = params["heading"]
+    progress = params["progress"]
+    steps = params["steps"]
+    speed = params["speed"]
+    steering_angle = params["steering_angle"]
+    track_width = params["track_width"]
+    waypoints = params["waypoints"]
+    closest_waypoints = params["closest_waypoints"]
+    is_offtrack = params["is_offtrack"]
+
+    ############### OPTIMAL X,Y,SPEED,TIME ################
+
+    closest_index, second_closest_index = closest_2_racing_points_index(
+        racing_track, [x, y]
+    )
+    optimals = racing_track[closest_index]
+    optimals_second = racing_track[second_closest_index]
+
+    first_racingpoint_index = 0
+
+    if steps == 1:
+        first_racingpoint_index = closest_index
+
+    ################ REWARD AND PUNISHMENT ################
+
+    reward = 1
+
+    dist = dist_to_racing_line(optimals[0:2], optimals_second[0:2], [x, y])
+    distance_reward = max(1e-3, 1 - (dist / (track_width * 0.5)))
+    reward += distance_reward * DISTANCE_MULTIPLE
+
+    speed_diff = abs(optimals[2] - speed)
+    if speed_diff <= SPEED_DIFF_NO_REWARD:
+        speed_reward = (1 - (speed_diff / SPEED_DIFF_NO_REWARD) ** 2) ** 2
     else:
-        speed_reward = speed * 0.1  # Normal reward for speed
+        speed_reward = 0
+    reward += speed_reward * SPEED_MULTIPLE
 
-    reward += speed_reward
+    times_list = [row[3] for row in racing_track]
+    projected_time_val = projected_time(
+        first_racingpoint_index, closest_index, steps, times_list
+    )
+    try:
+        steps_prediction = projected_time_val * 15 + 1
+        reward_prediction = max(
+            1e-3,
+            (
+                -REWARD_PER_STEP_FOR_FASTEST_TIME
+                * (FASTEST_TIME)
+                / (STANDARD_TIME - FASTEST_TIME)
+            )
+            * (steps_prediction - (STANDARD_TIME * 15 + 1)),
+        )
+        steps_reward = min(
+            REWARD_PER_STEP_FOR_FASTEST_TIME, reward_prediction / steps_prediction
+        )
+    except ZeroDivisionError:
+        steps_reward = 0
+    reward += steps_reward
+
+    direction_diff = racing_direction_diff(
+        optimals[0:2], optimals_second[0:2], [x, y], heading
+    )
+    if direction_diff > ZERO_REWARD_THRESHOLD_DIRECTION:
+        reward = 1e-3
+
+    if optimals[2] - speed > ZERO_REWARD_THRESHOLD_SPEED_DIFF:
+        reward = 1e-3
+
+    if progress == 100:
+        finish_reward = max(
+            1e-3,
+            (-REWARD_FOR_FASTEST_TIME / (15 * (STANDARD_TIME - FASTEST_TIME)))
+            * (steps - STANDARD_TIME * 15),
+        )
+        reward += finish_reward
+
+    if is_offtrack:
+        reward = 1e-3
 
     return float(reward)
